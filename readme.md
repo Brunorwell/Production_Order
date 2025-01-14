@@ -28,5 +28,5 @@
 <p>The database design is based on the relationships between the entities involved in the production order workflow. Since the production order itself is not organized as a database, it was necessary to identify all the entities related to the workflow and ensure that the structure has proper connections to better represent the business rules and preserve cohesion.<p>
 
 <p>The following image represents the Entity Relationship Diagram (ERD) of the structure:   <p>
-<img src="images/erd.jpeg">
+<img src="images/erd.jpeg" style-width: 100%; height: auto;>
 
