@@ -1,6 +1,6 @@
 <p width="100%" align="center">
 <!-- a largura é 100%, pois representa a proporção completa da faixa superior do paragrafo -->
-    <img src="./images/GitHub-Logo.png" width="200px">
+    <img src="./images/sql.png" width="200px">
 </p>    
 <!-- Usei barra antes do "p" para fechar paragrafo -->
 <h1 id = "projectDescription" align="center">Production Order Data Base</h1>
@@ -65,7 +65,7 @@
     PRODUCT_WEIGHT_UNITY(Product_id[PK and FK], Weight_id[PK and FK]) 
 
     PRODUCT_WEIGHT(Weight_id[PK] ,Box_id[FK], Weight_desc)   
-The table PRODUCT_UNITY is responsible for storing all the types of candy that the factory manufactured. The PRODUCT_WEIGHT is reponsible to associating one product (or a collection of products) with its respective packaging.  Since, one product - or more than one - can be associated with multiple packaging options - and multiple packaging options also can be associated with more than products, it was necessary to create a associative table (PRODUCT_WEIGHT_UNITY) to ensure that all combinations are possible 
+The table PRODUCT_UNITY is responsible for storing all the types of candy that the factory manufactured. The PRODUCT_WEIGHT is reponsible to associating one product (or a collection of products) with its respective packaging.  Since, one product - or more than one - can be associated with multiple packaging options - and multiple packaging options also can be associated with more than one products, it was necessary to create a associative table (PRODUCT_WEIGHT_UNITY) to ensure that all combinations are possibl. 
 <br>
 <br>
 2.[PRODUCT_WEIGHT] 1:N [BOX_REGISTER]
@@ -90,7 +90,7 @@ Products are organized into categories and the LOT table reflects this rule. The
     PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, Total_2_To_One, OBS, Lot_id[FK], Weight_id[FK])
 
     ITEM_MOVEMENT(Item_movem_id[PK], Movement_id[PK], Quantity, Product_id[FK],Box_id[FK], Lot_id[FK], Po_id[FK])
-The table ITEM_MOVEMENT is responsible for storing the data that the machine operator needs to request items from the logistics department. The primary key of the ITEM_MOVEMENT is formed by two fields to ensure that each individual movement (Item_movem_id) can be associated with one Movement_id. 
+The table ITEM_MOVEMENT is responsible for storing the data that the machine operator needs to request items from the logistics department. The primary key of the ITEM_MOVEMENT is formed by two fields to ensure that each individual movement (Item_movem_id) can be associated with one "Movement_id"
 <br><br>
 Since only one production order can be associated with one logistics movement, the primary key from the PRODUCTION_ORDER table is referenced in the ITEM_MOVEMENT table.
 <p> 
@@ -98,6 +98,5 @@ Since only one production order can be associated with one logistics movement, t
 <ul>
 <li>SQL Server Management Studio 20.2: Used for designing, querying, and managing the database.</li>
 <li>Dia: A diagramming tool used to model the Entity-Relationship Diagram (ERD).</li>
-
 
 </ul>
