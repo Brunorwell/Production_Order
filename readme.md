@@ -7,7 +7,7 @@
 <p>This project reproduce what already happens in the company that I currently work for. I realized that some sheets that I have to deal with are basically a database - You can even identify the primary and foreign keys playing their roles. I decided to build a low-scale database inspired in this process that contains the same data presented in the sheets and the relationships between the tables. </p>
 
 
-## Content Table
+## Summary
 
 <ul>
     <li><a href = "#context">General Context</a></li>
@@ -98,5 +98,4 @@ Since only one production order can be associated with one logistics movement, t
 <ul>
 <li>SQL Server Management Studio 20.2: Used for designing, querying, and managing the database.</li>
 <li>Dia: A diagramming tool used to model the Entity-Relationship Diagram (ERD).</li>
-
 </ul>
