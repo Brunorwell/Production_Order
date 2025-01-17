@@ -2,7 +2,7 @@
     <img src="./images/sql.png" width="200px">
 </p>    
 <h1 id = "projectDescription" align="center">Production Order Data Base</h1>
-<p>This project reproduce what already happens in the company that I currently work for. I realized that some sheets that I have to deal with are basically a database - You can even identify the primary and foreign keys playing their roles. I decided to build a low-scale database inspired in this process that contains the same data presented in the sheets and the relationships between the tables. </p>
+<p>This project reproduce what already happens in the company that I currently work for. I realized that some sheets that I have to deal with are basically a database - You can even identify the primary and foreign keys playing their roles. I decided to build a low-scale database inspired by this process that contains the same data presented in the sheets and the relationships between the tables. </p>
 
 
 ## Summary
@@ -70,7 +70,7 @@ The table PRODUCT_UNITY is responsible for storing all the types of candy that t
     PRODUCT_WEIGHT(Weight_id[PK] ,Box_id[FK], Weight_desc)
 
     BOX_REGISTER(Box_id[PK], Box_desc) 	
-The PRODUCT_WEIGHT is also responsible for associating products with their respective packaging. Since the same packaging can be related to mutiple "weight_id" and each "weight_id" can only be associated with one packaging, the primary key of the BOX_REGISTER table is referenced in the PRODUCT_WEIGHT table as foreign key.
+The PRODUCT_WEIGHT is responsible for associating products with their respective packaging. Since the same packaging can be related to mutiple "weight_id" and each "weight_id" can only be associated with one packaging, the primary key of the BOX_REGISTER table is referenced in the PRODUCT_WEIGHT table as foreign key.
 <br>
 <br>
 3.[LOT] N:1 [LOT_CODE]
