@@ -73,7 +73,7 @@ The table PRODUCT_UNITY is responsible for storing all the types of candy that t
 The PRODUCT_WEIGHT is responsible for associating products with their respective packaging. Since the same packaging can be related to mutiple "weight_id" and each "weight_id" can only be associated with one packaging, the primary key of the BOX_REGISTER table is referenced in the PRODUCT_WEIGHT table as foreign key.
 <br>
 <br>
-3.[LOT] N:1 [LOT_CODE]
+3.[LOT] 1:1 [LOT_CODE]
 
     LOT(Lot_id[PK], Lot_number[PK],  Lot_cod_id[FK]) 
 
