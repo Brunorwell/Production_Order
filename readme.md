@@ -4,7 +4,6 @@
 <h1 id = "projectDescription" align="center">Production Order Data Base</h1>
 <p>This project reproduce what already happens in the company that I currently work for. I realized that some sheets that I have to deal with are basically a database - You can even identify the primary and foreign keys playing their roles. I decided to build a low-scale database inspired by this process that contains the same data presented in the sheets and the relationships between the tables. </p>
 
-
 ## Summary
 
 <ul>
@@ -25,11 +24,10 @@
 <p>The database design is based on the relationships between the entities involved in the production order workflow. Since the production order itself is not organized as a database, it was necessary to identify all the entities related to the workflow and ensure that the structure has proper connections to better represent the business rules and preserve cohesion.</p>
 
 <p>The following image represents the Entity Relationship Diagram (ERD) of the structure:</p>
-<img src="images/erd.jpeg" style-width: 100%; height: auto;>
+<img src="images/erd.jpeg" style-width: 100%; height: auto>
 
 <p>The following model represents the Entity Relationship Model (ERM):
-    
-    PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, Total_2_To_One, OBS, Lot_id[FK], Weight_id[FK])
+    PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, OBS, Lot_id[FK])
 
     PRODUCT_UNITY(Product_id[PK], product_name) 
 
@@ -37,19 +35,19 @@
 
     PRODUCT_WEIGHT(Weight_id[PK], Box_id[FK], Weight_desc)
 
-    TRANSLATION_WEIGHT(Weight_id[PK and FK], Idiom_id[PK and FK], Weight_desc_trans)
+    TRANSLATION_PRODUCT(PRODUCT_id[PK and FK], Idiom_id[PK and FK], product_name_trans)
 
     IDIOM(Idiom_id[PK], Idiom_name)
 
     BOX_REGISTER(Box_id[PK], Box_desc) 	
 
-    LOT(Lot_id[PK], Lot_cod_id[FK], Lot_number) 
+    LOT(Lot_id[PK], Lot_category_id[FK], Lot_number) 
 
-    LOT_CODE(Lot_cod_id[PK], Lot_cod)
-    
-    BOX_MOVEMENT(Box_id[PK AND FK], Po_id[FK], lot_id[FK], Quantity)
+    LOT_CATEGORY(Lot_category_id[PK], Lot_cod)
 
-    PRODUCT_MOVEMENT(Product_id[PK], Lot_id[FK], Quantity)
+    BOX_MOVEMENT(Box_id[PK AND FK], lot_id[PK AND FK], Quantity)
+
+    PRODUCT_MOVEMENT(Product_id[PK and FK], Weight_id[PK and FK], Lot_id[PK AND FK], Quantity)
  </p>
  <h3 id="relationships"> Critical relationships</h3>
  <p>As I mentioned earlier, the sheets were not organized as a database, which means that there is redundant  information. It was necessary to identify the entities and ensure that at least the third normal form (3NF) was applied.</p>
@@ -61,46 +59,45 @@
 
     PRODUCT_WEIGHT_UNITY(Product_id[PK and FK], Weight_id[PK and FK]) 
 
-    PRODUCT_WEIGHT(Weight_id[PK] ,Box_id[FK], Weight_desc)   
+    PRODUCT_WEIGHT(Weight_id[PK], Box_id[FK], Weight_desc) 
+
 The table PRODUCT_UNITY is responsible for storing all the types of candy that the factory manufactured. The PRODUCT_WEIGHT is reponsible to associating one product (or a collection of products) with its respective packaging.  Since, one product - or more than one - can be associated with multiple packaging options - and multiple packaging options also can be associated with more than one product, it was necessary to create a associative table (PRODUCT_WEIGHT_UNITY) to ensure that all combinations are possible. 
 <br>
 <br>
 2.[PRODUCT_WEIGHT] 1:N [BOX_REGISTER]
 
-    PRODUCT_WEIGHT(Weight_id[PK] ,Box_id[FK], Weight_desc)
+    PRODUCT_WEIGHT(Weight_id[PK], Box_id[FK], Weight_desc)
 
-    BOX_REGISTER(Box_id[PK], Box_desc) 	
+    BOX_REGISTER(Box_id[PK], Box_desc) 
+
 The PRODUCT_WEIGHT is responsible for associating products with their respective packaging. Since the same packaging can be related to mutiple "weight_id" and each "weight_id" can only be associated with one packaging, the primary key of the BOX_REGISTER table is referenced in the PRODUCT_WEIGHT table as foreign key.
 <br>
 <br>
-3.[LOT] 1:1 [LOT_CODE]
+3.[LOT] N:1 [LOT_CATEGORY]
 
-    LOT(Lot_id[PK], Lot_number[PK],  Lot_cod_id[FK]) 
+    LOT(Lot_id[PK], Lot_number[PK], Lot_category_id[FK]) 
 
-    LOT_CODE(Lot_cod_id[PK], Lot_cod)
+    LOT_CATEGORY(Lot_category_id[PK], Lot_cod)
     
-Products are organized into categories and the LOT table reflects this rule. The LOT_CODE table is responsible for storing these categories. Since each "Lot_id" can belong to only one category the primary key of the LOT_CODE table is referenced in the LOT table as a foreign key. 
+Products are organized into categories and the LOT table reflects this rule. The LOT_CATEGORY table is responsible for storing these categories. Since each "Lot_id" can belong to only one category the primary key of the LOT_CATEGORY table is referenced in the LOT table as a foreign key. 
 <br><br>
 4.[PRODUCT_UNITY] 1:1 [PRODUCT_MOVEMENT] 1:1 [LOT] 1:1 [PRODUCTION_ORDER]
    
     PRODUCT_UNITY(Product_id[PK], product_name)
 
-    PRODUCT_MOVEMENT(Product_id[PK], Lot_id[FK], Quantity)
+    PRODUCT_MOVEMENT(Product_id[PK AND FK], Lot_id[PK AND FK], Quantity)
 
     LOT(Lot_id[PK], Lot_cod_id[FK], Lot_number) 
 
-    PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, Total_2_To_One, OBS, Lot_id[FK], Weight_id[FK])
+    PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, OBS, Lot_id[FK])
+
 The PRODUCT_MOVEMENT table is responsible for storing all movements of a product. This table is a weak entity, meaning it requires foreign keys as part of its primary key <br><br>
 A production order and a specific product/products share the same lot. Therefore, the connection between PRODUCT_MOVEMENT and PRODUCTION_ORDER is through the primary key of the LOT table.
 <br><br>
-5.[BOX_MOVEMENT] 1:1 [PRODUCTION_ORDER]
 
-    BOX_MOVEMENT(Box_id[PK AND FK],Po_id[FK], lot_id[FK], Quantity)
-
-    PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, Total_2_To_One, OBS, Lot_id[FK], Weight_id[FK])
-Since a specific box does not share the same lot with a production order, the connection between these tables is through the primary key of the PRODUCTION_ORDER table as a foreign key in the BOX_MOVEMENT table.<br><br>
 <h2 id="Technologies">Technologies Used</h2>
 <ul>
 <li>SQL Server Management Studio 20.2: Used for designing, querying, and managing the database.</li>
 <li>Dia: A diagramming tool used to model the Entity-Relationship Diagram (ERD).</li>
+<li>Docker: Used for containerization of the SQL Server Management Studio server.</li>
 </ul>

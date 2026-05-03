@@ -27,10 +27,10 @@ CREATE TABLE box_register(
 )
 GO
 
-CREATE TABLE lot_code(
-	lot_cod_id	int not null,
-	lot_cod		char(04),
-	constraint pk_lot_cod primary key (lot_cod_id)
+CREATE TABLE lot_category(
+	lot_category_id	int not null,
+	lot_cod		char(08),
+	constraint pk_category_id primary key (lot_category_id)
 )
 GO
 
@@ -52,12 +52,12 @@ CREATE TABLE product_weight_unity(
 )
 GO
 
-CREATE TABLE translation_weight(
-	weight_id			char(12),
+CREATE TABLE translation_product(
+	product_id			char(04),
 	idiom_id			int not null,
-	weight_desc_trans	varchar(50),
-	constraint pk_idiom_weight primary key (weight_id, idiom_id),
-	constraint fk_weight_trans	foreign key (weight_id) references product_weight(weight_id),
+	product_name_trans	varchar(50),
+	constraint pk_idiom_weight primary key (product_id, idiom_id),
+	constraint fk_product_trans	foreign key (product_id) references product_unity(product_id),
 	constraint fk_idiom_id  foreign key (idiom_id)  references idiom(idiom_id)
 )
 GO
@@ -65,9 +65,9 @@ GO
 CREATE TABLE lot(
 	lot_id	int not null,
 	lot_number int not null,
-	lot_cod_id int not null,
+	lot_category_id int not null,
 	constraint pk_lot_id primary key (lot_id),
-	constraint fk_lot_cod_id foreign key (lot_cod_id) references lot_code(lot_cod_id)
+	constraint fk_lot_category_id foreign key (lot_category_id) references lot_category(lot_category_id)
 )
 GO
 
@@ -76,35 +76,33 @@ CREATE TABLE production_order(
 	issue_date		date,
 	beginning_date	date,
 	delivery_date	date,
-	total_2_to_one	int not null,
 	obs				varchar(100),
-	weight_id	char(12),
-	lot_id	int not null,
-	constraint pk_po_id primary key (po_id), 
-	constraint fk_product_weight_po foreign key (weight_id) references product_weight(weight_id),
-	constraint fk_lot_po foreign key (lot_id) references lot(lot_id)
+	lot_id	int not null UNIQUE,
+	constraint fk_lot_po foreign key (lot_id) references lot(lot_id),
+	constraint pk_po_id primary key (po_id),
 )		
 GO
 
 CREATE TABLE product_movement(
-	product_id	char(04),
-	lot_id	int not null,
-	quantity int not null,
-	constraint fk_pro_pm foreign key (product_id) references product_unity(product_id),
-	constraint fk_lot_pm foreign key (lot_id) references lot(lot_id),
-	constraint pk_pk primary key (product_id)
+    product_id  char(04)    not null,
+    weight_id   char(12)	not null,
+    lot_id      int         not null UNIQUE,
+    quantity    int         not null,
+    constraint pk_pm primary key (product_id, weight_id, lot_id),
+    constraint fk_pwu_pm foreign key (product_id, weight_id) 
+        references product_weight_unity(product_id, weight_id),
+    constraint fk_lot_pm foreign key (lot_id) references lot(lot_id)
 )
-GO
 
 CREATE TABLE box_movement(
-	box_id		char(11),
+	box_id	char(11),
 	lot_id	int not null,
 	quantity int not null,
-	po_id			int not null,
-	constraint fk_box_bm foreign key (box_id) references box_register(box_id),
-	constraint fk_lot_bm foreign key (lot_id) references lot(lot_id),
-	constraint pk_bm primary key (box_id),
-	constraint fk_po_bx foreign key (po_id) references production_order(po_id)
+	constraint fk_box_bm foreign key (box_id) 
+		references box_register(box_id),
+	constraint fk_lot_bm foreign key (lot_id) 
+		references lot(lot_id),
+	constraint pk_bm primary key (box_id, lot_id)
 )
 GO
 
@@ -112,11 +110,11 @@ GO
 --DATA INSERTION
 
 INSERT INTO product_unity (product_id, product_name)
-	VALUES	('F005', 'FRUTIE SOBREM MORANGO CREMOSO'),
-			('F013', 'FRUTIE SOBREM PAVE DE ABACAXI'),
-			('F014', 'FRUTIE SOBREM TORTA DE LIMAO'),
-			('A008', 'AMORAS 1,55G'),
-			('D017', 'DENTADURAS 5,5G M3')
+	VALUES	('F001', 'FRUTIE SOBREM MORANGO CREMOSO'),
+			('F002', 'FRUTIE SOBREM PAVE DE ABACAXI'),
+			('F003', 'FRUTIE SOBREM TORTA DE LIMAO'),
+			('A001', 'AMORAS'),
+			('D001', 'DENTADURAS')
 GO
 
 INSERT INTO idiom(idiom_id, idiom_name)
@@ -129,53 +127,65 @@ INSERT INTO box_register(box_id, box_desc)
 			('ME0BR257703', 'CX COLOR DP AUT 24X12X15 V0')
 GO
 
-INSERT INTO lot_code(lot_cod_id, lot_cod)
-	VALUES	(1, 'GAMO'),
-			(2,	'GFRS'),
-			(3, 'CX')
+INSERT INTO lot_category(lot_category_id, lot_cod)
+	VALUES	(1, 'GOMA'),
+			(2,	'GEL'),
+			(3, 'CHICLETE')
 GO
 
 INSERT INTO product_weight(weight_id, weight_desc, box_id)
-	VALUES	('111070F07611', 'FRUTIE SOBREMESAS 12X70G', 'ME0BR257681'),
-			('113018A00104', 'AMORAS 24X12X15G', 'ME0BR257703')
+	VALUES	('111070F07611', '12X70G', 'ME0BR257681'),
+			('113018A00104', '24X12X15G', 'ME0BR257703')
 GO
 
 INSERT INTO product_weight_unity(product_id, weight_id)
-	VALUES	('A008', '113018A00104'),
-			('F005', '111070F07611'),
-			('F013', '111070F07611'),
-			('F014', '111070F07611')
+	VALUES	('A001', '111070F07611'),
+			('F001', '113018A00104'),
+			('F001', '111070F07611'),
+			('F002', '111070F07611'),
+			('F002', '113018A00104'),
+			('F003', '113018A00104')
 GO
 
-INSERT INTO translation_weight(weight_id, idiom_id, weight_desc_trans)
-	VALUES	('113018A00104', 1, 'GOMA MORAS 15GX12X24'),
-			('111070F07611', 1, 'POSTRE FRUTIE 70GX12'),
-			('113018A00104', 2, 'BLACKBERRY GUMMIES 15G 12CT X 24PK'),
-			('111070F07611', 2, 'FRUTIE DESSERTS 70G 12CT')
+INSERT INTO translation_product(product_id, idiom_id, product_name_trans)
+	VALUES	('F001', 1, 'FRUTIE POSTRE FRESA CREMOSA'),
+			('F001', 2, 'FRUTIE DESSERT CREAMY STRAWBERRY'),
+			('F002', 1, 'FRUTIE POSTRE PAVÉ DE PIÑA'),
+			('F002', 2, 'FRUTIE DESSERT PINEAPPLE PAVÉ'),
+			('F003', 1, 'FRUTIE POSTRE TARTA DE LIMÓN'),
+			('F003', 2, 'FRUTIE DESSERT LEMON PIE')
 GO
 
-INSERT INTO lot(lot_id, lot_number, lot_cod_id)
-	VALUES	(1, 446, 2),
+INSERT INTO lot(lot_id, lot_number, lot_category_id)
+	VALUES	(1, 446, 1),
 			(2, 450, 1),
-			(3, 514, 3),
-			(4, 994, 3)
+			(3, 514, 1),
+			(4, 994, 1),
+			(5, 995, 1)
 GO
 
-INSERT INTO production_order(po_id, issue_date, beginning_date, delivery_date, total_2_to_one, obs, weight_id, lot_id)
-	VALUES	(61549, '12/12/2024', '12/09/2024', '12/15/2024', 180000, null, '113018A00104', 2),
-			(61487, '11/08/2024', '11/11/2024', '11/17/2024', 43200, null, '111070F07611', 1)
+INSERT INTO production_order(po_id, issue_date, beginning_date, delivery_date, obs, lot_id)
+	VALUES	(61549, '12/12/2024', '12/09/2024', '12/15/2024', null, 2),
+			(61487, '11/08/2024', '11/11/2024', '11/17/2024', null, 1),
+			(61488, '05/03/2026', '05/06/2026', '10/06/2026', null, 3),
+			(61489, '05/10/2026', '05/11/2026', '05/15/2026', null, 4),
+			(61490, '05/10/2026', '05/11/2026', '05/17/2026', null, 5)
 GO
 
-INSERT INTO product_movement(product_id, lot_id, quantity)
-	VALUES	('A008', 2, 32400),
-			('F005', 1, 1008),
-			('F013', 1, 1008),
-			('F014', 1, 1008)
+INSERT INTO product_movement(product_id, weight_id, lot_id, quantity)
+	VALUES	('A001','111070F07611', 2, 180000),
+			('F003','113018A00104', 1, 43200),
+			('F001', '113018A00104',3, 1008),
+			('F002','111070F07611', 4, 1000),
+			('F002','113018A00104', 5, 1000)
 GO
 
-INSERT INTO box_movement(box_id, lot_id, quantity, po_id)
-	VALUES	('ME0BR257703', 3, 3600, 61549),
-			('ME0BR257681', 4, 7500, 61487)
+INSERT INTO box_movement(box_id, lot_id, quantity)
+	VALUES	('ME0BR257703', 3, 500),
+			('ME0BR257681', 4, 600),
+			('ME0BR257681', 2, 200),
+			('ME0BR257703', 1, 150),
+			('ME0BR257703', 5, 180)
 GO
 
 
