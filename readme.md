@@ -87,7 +87,7 @@ Products are organized into categories and the LOT table reflects this rule. The
 
     PRODUCT_MOVEMENT(Product_id[PK AND FK], Lot_id[PK AND FK], Quantity)
 
-    LOT(Lot_id[PK], Lot_cod_id[FK], Lot_number) 
+    LOT(Lot_id[PK], Lot_category_id[FK], Lot_number) 
 
     PRODUCTION_ORDER(Po_id[PK], Issue_Date, Beginning_date, Delivery_date, OBS, Lot_id[FK])
 
